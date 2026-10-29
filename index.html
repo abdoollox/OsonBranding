@@ -122,12 +122,11 @@ section.blok { padding-block: 44px; border-top: 1.5px solid var(--line); scroll-
 .yorliq.oq i { width: 14px; height: 14px; border-radius: 3px; background: #0074D6 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 14'%3E%3Cpath d='M5.6 2.5h2.8v3.1h3.1v2.8H8.4v3.1H5.6V8.4H2.5V5.6h3.1z' fill='%23fff'/%3E%3C/svg%3E") center / 100% no-repeat; }
 .belgi-manba { color: var(--muted); font-size: .8rem; }
 
-/* uslub (2 ta) va plyus (3 ta) yonma-yon: 5 ta karta bir xil kenglikda butun qatorni to'ldiradi */
-.sozlamalar { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 3fr); gap: 22px; }
-.soz-guruh { background: var(--surface); border: 1.5px solid var(--line); border-radius: 18px; padding: 20px; display: flex; flex-direction: column; gap: 14px; min-width: 0; }
-.soz-tanlov { display: grid; grid-template-columns: repeat(var(--n, 2), minmax(0, 1fr)); gap: 12px; flex: 1; }
-.soz { display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 18px 10px 14px; border: 2px solid #D6E0EC; border-radius: 14px; background: var(--paper); color: #0F2135; cursor: pointer; transition: border-color .15s, box-shadow .15s; }
-.soz svg { width: 96px; height: 96px; }
+/* uslub (2 ta) va plyus (3 ta) — alohida qadamlarda (bitta ekranda ikki tanlov bo'lsa, rahbar ikkinchisini sezmay qoldi);
+   kartalar bir xil kenglikda, haddan tashqari cho'zilib ketmaydi */
+.soz-tanlov { display: grid; grid-template-columns: repeat(var(--n, 2), minmax(0, 1fr)); gap: 18px; max-width: calc(var(--n, 2) * 260px); }
+.soz { display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 26px 12px 20px; border: 2px solid #D6E0EC; border-radius: 18px; background: var(--paper); color: #0F2135; cursor: pointer; transition: border-color .15s, box-shadow .15s; }
+.soz svg { width: 120px; height: 120px; }
 .soz span { display: grid; gap: 2px; text-align: center; }
 .soz b { font-size: 1.1rem; font-weight: 800; }
 .soz small { color: #4A5C72; font-size: .8rem; }
@@ -236,11 +235,10 @@ footer p + p { margin-top: 8px; }
 .panel a { flex: none; background: var(--accent); color: #fff; font-weight: 800; text-decoration: none; padding: 12px 20px; border-radius: 12px; }
 
 @media (max-width: 900px) {
-  .sozlamalar { grid-template-columns: minmax(0, 1fr); }
 }
 @media (max-width: 640px) {
   html { font-size: 17px; }
-  .nomlar, .qollanish, .sozlamalar { grid-template-columns: minmax(0, 1fr); }
+  .nomlar, .qollanish { grid-template-columns: minmax(0, 1fr); }
   .soz svg { width: 64px; height: 64px; }
   .soz { padding: 14px 6px 12px; }
   .belgilar { grid-template-columns: minmax(0, 1fr); }
@@ -284,7 +282,7 @@ html { scroll-behavior: smooth; }
   <header class="hero">
     <div class="hero-ichi">
       <h1>Yangi loyihamiz uchun nom tanlaymiz</h1>
-      <p class="lead">Loyiha ommaga chiqishidan oldin uning nomi va belgisi rasman tasdiqlanishi kerak. Uch qadamda birga tanlaymiz: avval nom, keyin belgi, so'ng belgining ko'rinishi. Oxirida natija qayerda qanday ko'rinishini ko'ramiz.</p>
+      <p class="lead">Loyiha ommaga chiqishidan oldin uning nomi va belgisi rasman tasdiqlanishi kerak. To'rt qadamda birga tanlaymiz: avval nom, keyin belgi, so'ng belgining uslubi va plyus. Oxirida natija qayerda qanday ko'rinishini ko'ramiz.</p>
       <ol class="steps" id="qadamlar"></ol>
       <button type="button" class="davom" id="boshlash" data-oldinga="1">Boshlash <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12l7 7 7-7"/></svg></button>
       <p class="ovoz-muddat" id="ovoz-muddat"></p>
@@ -317,20 +315,32 @@ html { scroll-behavior: smooth; }
   </div>
 </section>
 
-<section class="blok" id="korinish" data-qadam="3" hidden>
+<section class="blok" id="uslub" data-qadam="3" hidden>
   <div class="wrap">
     <div class="blok-bosh">
       <span class="q">3-savol</span>
-      <h2>Belgi qanday chiziladi?</h2>
-      <p>Oxirgi tanlov — belgining ko'rinishi. Uslub: yaxlit (ikonka to'liq bo'yalgan) yoki chiziqli (faqat chiziqlar). Plyus: plyussiz, qizil yoki oq (chiziqli belgida oq o'rniga ko'k). Oson Aptekaning hamma mahsulot belgilarida qizil plyus bor (Kassa, Price, Report).</p>
+      <h2>Belgi yaxlit bo'lsinmi yoki chiziqli?</h2>
+      <p>Yaxlit — ikonka to'liq bo'yalgan. Chiziqli — faqat chiziqlar, Oson Kassa va Oson Price belgilari kabi.</p>
     </div>
-    <div class="sozlamalar" id="sozlamalar"></div>
-    <p class="soz-izoh" id="soz-izoh"></p>
-    <div class="keyingi"><button type="button" class="davom" data-oldinga="4">Natijani ko'rish <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12l7 7 7-7"/></svg></button></div>
+    <div class="soz-tanlov" id="uslublar" style="--n:2"></div>
+    <div class="keyingi"><button type="button" class="davom" data-oldinga="4">Davom etish: plyusni tanlash <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12l7 7 7-7"/></svg></button></div>
   </div>
 </section>
 
-<section class="blok" id="natija" data-qadam="4" hidden>
+<section class="blok" id="plyus" data-qadam="4" hidden>
+  <div class="wrap">
+    <div class="blok-bosh">
+      <span class="q">4-savol</span>
+      <h2>Belgida plyus bo'lsinmi?</h2>
+      <p>Oson Aptekaning hamma mahsulot belgilarida qizil plyus bor (Kassa, Price, Report). Plyussiz variantda ikonka asl holicha qoladi.</p>
+    </div>
+    <div class="soz-tanlov" id="plyuslar" style="--n:3"></div>
+    <p class="soz-izoh" id="soz-izoh"></p>
+    <div class="keyingi"><button type="button" class="davom" data-oldinga="5">Natijani ko'rish <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12l7 7 7-7"/></svg></button></div>
+  </div>
+</section>
+
+<section class="blok" id="natija" data-qadam="5" hidden>
   <div class="wrap">
     <div class="blok-bosh">
       <span class="q">Natija</span>
@@ -373,7 +383,7 @@ html { scroll-behavior: smooth; }
   </div>
 </section>
 
-<section class="blok" id="ovoz" data-qadam="4" hidden>
+<section class="blok" id="ovoz" data-qadam="5" hidden>
   <div class="wrap">
     <div class="blok-bosh">
       <span class="q">Ovoz berish</span>
@@ -395,7 +405,7 @@ html { scroll-behavior: smooth; }
   </div>
 </section>
 
-<section class="blok" id="hammasi" data-qadam="4" hidden>
+<section class="blok" id="hammasi" data-qadam="5" hidden>
   <div class="wrap">
     <div class="blok-bosh">
       <span class="q">Hamma variantlar</span>
@@ -406,7 +416,7 @@ html { scroll-behavior: smooth; }
   </div>
 </section>
 
-<footer data-qadam="4" hidden>
+<footer data-qadam="5" hidden>
   <div class="wrap">
     <p><button type="button" class="qaytadan" data-oldinga="0">Boshidan ko'rish</button></p>
     <p>Ranglar va yozuv Oson Apteka brandbookidan: ko'k #0074D6, qizil #FF0A2A, shrift Gilroy Bold. Belgining tashqi shakli Oson Apteka belgisi bilan bir xil.</p>
@@ -634,17 +644,16 @@ function chizNatija() {
 }
 function chizSozlamalar() {
   const b = belgiTop(holat.belgi);
-  if (!b) { $("sozlamalar").innerHTML = ""; $("soz-izoh").textContent = "Avval belgini tanlang."; return; }
-  const guruh = (sarlavha, kalit, variantlar) => `<div class="soz-guruh"><h3>${sarlavha}</h3><div class="soz-tanlov" style="--n:${variantlar.length}">${variantlar.map(([q, nomi, izoh]) => {
+  if (!b) { $("uslublar").innerHTML = $("plyuslar").innerHTML = ""; $("soz-izoh").textContent = "Avval belgini tanlang."; return; }
+  const guruh = (kalit, variantlar) => variantlar.map(([q, nomi, izoh]) => {
     // oldindan ko'rish: plyus guruhida uslub hali tanlanmagan bo'lsa yaxlit, uslub guruhida plyus tanlanmagan bo'lsa plyussiz
     const o = { ...holat, [kalit]: q };
     const on = holat[kalit] === q;
     return `<button type="button" class="soz" id="soz-${kalit}-${q}" data-${kalit}="${q}" aria-pressed="${on}">
       ${belgiSvg(holat.belgi, ODDIY, "", o)}<span><b>${nomi}</b><small>${izoh}</small></span></button>`;
-  }).join("")}</div></div>`;
-  $("sozlamalar").innerHTML =
-    guruh("Uslub", "uslub", [["yaxlit", "Yaxlit", "ikonka to'liq bo'yalgan"], ["chiziq", "Chiziqli", "faqat chiziqlar, Kassa va Price kabi"]])
-    + guruh("Plyus", "plyus", [["yoq", "Plyussiz", "ikonka asl holicha"], ["qizil", "Qizil plyus", "Oson oilasidagi kabi"], oqKokmi() ? ["oq", "Ko'k plyus", "oq fonda oq o'rniga"] : ["oq", "Oq plyus", "yaxlit belgida teshikdek"]]);
+  }).join("");
+  $("uslublar").innerHTML = guruh("uslub", [["yaxlit", "Yaxlit", "ikonka to'liq bo'yalgan"], ["chiziq", "Chiziqli", "faqat chiziqlar, Kassa va Price kabi"]]);
+  $("plyuslar").innerHTML = guruh("plyus", [["yoq", "Plyussiz", "ikonka asl holicha"], ["qizil", "Qizil plyus", "Oson oilasidagi kabi"], oqKokmi() ? ["oq", "Ko'k plyus", "oq fonda oq o'rniga"] : ["oq", "Oq plyus", "yaxlit belgida teshikdek"]]);
   $("soz-izoh").textContent = !oqKokmi() ? ""
     : holat.uslub === "chiziq" ? "Chiziqli uslubda oq plyus oq fonda ko'rinmaydi, shuning uchun uning o'rniga ko'k plyus bo'ladi."
     : "Bu belgida plyus kitobdan tashqarida, oq fonda turadi — shuning uchun oq plyus o'rniga ko'k plyus bo'ladi.";
@@ -656,10 +665,11 @@ function tayyor(n) {
   const b = belgiTop(holat.belgi);
   if (n === 2) return !!holat.nom;
   if (n === 3) return !!b;
-  if (n === 4) return !!b && !!holat.uslub && !!holat.plyus;
+  if (n === 4) return !!b && !!holat.uslub;
+  if (n === 5) return !!b && !!holat.uslub && !!holat.plyus;
   return true;
 }
-const DAVOM_IZOH = { 2: "Davom etish uchun nomni tanlang", 3: "Davom etish uchun belgini tanlang", 4: "Davom etish uchun uslubni va plyusni tanlang" };
+const DAVOM_IZOH = { 2: "Davom etish uchun nomni tanlang", 3: "Davom etish uchun belgini tanlang", 4: "Davom etish uchun uslubni tanlang", 5: "Davom etish uchun plyusni tanlang" };
 function tugmalar() {
   document.querySelectorAll("button[data-oldinga]").forEach(t => {
     const n = +t.dataset.oldinga;
@@ -673,8 +683,8 @@ function tugmalar() {
   });
 }
 
-// hikoya: bo'limlar birin-ketin ochiladi (0 — faqat kirish, 1 nom, 2 belgi, 3 ko'rinish, 4 natija)
-const QADAMLAR = [["nom", "Nom"], ["belgi", "Belgi"], ["korinish", "Ko'rinish"], ["natija", "Natija"]];
+// hikoya: bo'limlar birin-ketin ochiladi (0 — faqat kirish, 1 nom, 2 belgi, 3 uslub, 4 plyus, 5 natija)
+const QADAMLAR = [["nom", "Nom"], ["belgi", "Belgi"], ["uslub", "Uslub"], ["plyus", "Plyus"], ["natija", "Natija"]];
 let qadam = 0;
 function ochQadamlar(yangi) {
   document.querySelectorAll("[data-qadam]").forEach(el => {
@@ -688,7 +698,7 @@ function ochQadamlar(yangi) {
     return `<li class="${holati}">${n <= qadam ? `<a href="#${id}">` : "<span>"}<b>${n < qadam ? "✓" : n}</b>${nomi}${n <= qadam ? "</a>" : "</span>"}</li>`;
   }).join("");
   document.querySelector(".panel").hidden = qadam < 2;
-  $("panel-natija").hidden = qadam < 4;
+  $("panel-natija").hidden = qadam < 5;
   tugmalar();
 }
 document.addEventListener("click", e => {
