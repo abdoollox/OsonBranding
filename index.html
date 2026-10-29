@@ -44,6 +44,8 @@
 }
 
 * { box-sizing: border-box; }
+/* logotip SVG ichida belgi ikonkasi o'zining <svg x y width height> i bilan turadi — o'lcham qoidalari faqat tashqi svg ga
+   tegsin ('>' bilan), aks holda ichki ikonka cho'zilib, yozuv ustiga chiqib ketadi */
 html { font-size: 19px; }
 body {
   margin: 0; background: var(--bg); color: var(--ink);
@@ -101,7 +103,7 @@ section.blok { padding-block: 44px; border-top: 1.5px solid var(--line); scroll-
 .nomlar { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px; }
 .nomlar .qogoz { padding: 30px 24px; height: 200px; }
 /* ikkala yozuv bir xil harf balandligida — adolatli solishtirish uchun */
-.nomlar .qogoz svg { height: 120px; width: auto; max-width: 100%; }
+.nomlar .qogoz > svg { height: 120px; width: auto; max-width: 100%; }
 .nom-sarlavha { font-family: var(--f-display); font-size: 1.6rem; font-weight: 800; }
 .faktlar { list-style: none; padding: 0; margin: 0; display: grid; gap: 10px; }
 .faktlar li { display: grid; grid-template-columns: 28px minmax(0, 1fr); gap: 8px; align-items: start; }
@@ -126,7 +128,7 @@ section.blok { padding-block: 44px; border-top: 1.5px solid var(--line); scroll-
    kartalar bir xil kenglikda, haddan tashqari cho'zilib ketmaydi */
 .soz-tanlov { display: grid; grid-template-columns: repeat(var(--n, 2), minmax(0, 1fr)); gap: 22px; max-width: calc(var(--n, 2) * 320px); margin-inline: auto; }
 .soz { display: flex; flex-direction: column; align-items: center; gap: 14px; padding: 34px 14px 26px; border: 2px solid #D6E0EC; border-radius: 18px; background: var(--paper); color: #0F2135; cursor: pointer; transition: border-color .15s, box-shadow .15s; }
-.soz svg { width: 150px; height: 150px; }
+.soz > svg { width: 150px; height: 150px; }
 .soz span { display: grid; gap: 4px; text-align: center; }
 .soz b { font-size: 1.3rem; font-weight: 800; }
 .soz small { color: #4A5C72; font-size: .9rem; }
@@ -157,7 +159,7 @@ section.blok { padding-block: 44px; border-top: 1.5px solid var(--line); scroll-
 
 /* ---------- natija ---------- */
 .natija-asosiy { background: var(--paper); border-radius: 22px; box-shadow: var(--shadow); padding: clamp(28px, 6vw, 64px); display: grid; place-items: center; }
-.natija-asosiy svg { width: 100%; max-width: 560px; height: auto; }
+.natija-asosiy > svg { width: 100%; max-width: 560px; height: auto; }
 .natija-nomi { margin-top: 16px; font-size: 1.15rem; }
 .natija-nomi b { color: var(--accent-ink); }
 .qollanish { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px; margin-top: 22px; }
@@ -173,14 +175,14 @@ section.blok { padding-block: 44px; border-top: 1.5px solid var(--line); scroll-
 .sahna svg.lk { width: 100%; max-width: 320px; height: auto; }
 .rangli { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; width: 100%; }
 .rangli div { border-radius: 12px; padding: 18px 12px; display: grid; place-items: center; }
-.rangli svg { width: 100%; max-width: 130px; height: auto; }
+.rangli > div > svg { width: 100%; max-width: 130px; height: auto; }
 .olchamlar { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: center; gap: 22px 28px; }
 .olchamlar figure { margin: 0; display: grid; justify-items: center; gap: 8px; font-size: .8rem; color: #4A5C72; font-weight: 700; }
 .olchamlar .kokda { background: #0074D6; border-radius: 10px; padding: 10px; }
 
 .oila { display: flex; flex-wrap: wrap; justify-content: center; gap: 22px 30px; }
 .oila figure { margin: 0; display: grid; justify-items: center; gap: 8px; font-weight: 700; color: #0F2135; font-size: .9rem; }
-.oila img, .oila svg { width: 84px; height: 84px; }
+.oila img, .oila figure > svg { width: 84px; height: 84px; }
 .oila figure.biz { color: #0063B8; font-weight: 800; background: #E3EFFB; border-radius: 16px; padding: 10px 12px; margin: -10px -12px; }
 
 /* telegram ro'yxati */
@@ -189,7 +191,7 @@ section.blok { padding-block: 44px; border-top: 1.5px solid var(--line); scroll-
 .tg-q + .tg-q { border-top: 1px solid #EEF1F5; }
 .tg-q.faol { background: #EAF3FD; }
 .tg-av { width: 54px; height: 54px; border-radius: 50%; display: grid; place-items: center; overflow: hidden; }
-.tg-av svg { width: 70%; height: 70%; }
+.tg-av > svg { width: 70%; height: 70%; }
 .tg-n { font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .tg-m { color: #5B6B7E; font-size: .85rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .tg-t { color: #8A97A6; font-size: .78rem; align-self: start; margin-top: 4px; }
@@ -198,7 +200,7 @@ section.blok { padding-block: 44px; border-top: 1.5px solid var(--line); scroll-
 .muqova { position: relative; width: 100%; aspect-ratio: 16 / 9; max-width: min(100%, 680px); background: #0074D6; border-radius: 12px; overflow: hidden; color: #fff; }
 .muqova .naqsh { position: absolute; inset: 0; width: 100%; height: 100%; }
 .muqova .mlogo { position: absolute; left: 6%; top: 9%; width: 30%; }
-.muqova .mlogo svg { width: 100%; height: auto; }
+.muqova .mlogo > svg { width: 100%; height: auto; }
 .muqova .mmatn { position: absolute; left: 6%; bottom: 10%; right: 30%; }
 .muqova .mmatn small { display: block; font-weight: 700; opacity: .85; font-size: clamp(.7rem, 1.6vw, 1rem); }
 .muqova .mmatn strong { display: block; font-family: var(--f-display); font-weight: 800; font-size: clamp(1rem, 3.4vw, 1.9rem); line-height: 1.05; margin-top: 4px; }
@@ -214,7 +216,7 @@ section.blok { padding-block: 44px; border-top: 1.5px solid var(--line); scroll-
 .matritsa button { width: 100%; background: var(--paper); border: 2px solid transparent; border-radius: 12px; padding: 14px 10px; cursor: pointer; display: grid; place-items: center; }
 .matritsa button:hover { border-color: var(--accent); }
 .matritsa button[aria-pressed="true"] { border-color: var(--accent); box-shadow: 0 0 0 4px var(--accent-soft); }
-.matritsa button svg { width: 100%; height: auto; max-width: 150px; }
+.matritsa button > svg { width: 100%; height: auto; max-width: 150px; }
 
 footer { padding-block: 34px 30px; color: var(--muted); font-size: .9rem; border-top: 1.5px solid var(--line); }
 footer p + p { margin-top: 8px; }
@@ -228,7 +230,7 @@ footer p + p { margin-top: 8px; }
 .panel .wrap { display: flex; align-items: center; gap: 16px; padding-block: 12px; }
 .panel .mini { width: 52px; height: 52px; flex: none; background: var(--paper); border-radius: 12px; padding: 6px; }
 .panel .mini:empty { display: none; }
-.panel .mini svg { width: 100%; height: 100%; }
+.panel .mini > svg { width: 100%; height: 100%; }
 .panel .matn { flex: 1; min-width: 0; line-height: 1.3; }
 .panel .matn small { color: var(--muted); font-weight: 700; font-size: .8rem; text-transform: uppercase; letter-spacing: .06em; }
 .panel .matn div { font-weight: 800; font-size: 1.05rem; }
@@ -239,7 +241,7 @@ footer p + p { margin-top: 8px; }
 @media (max-width: 640px) {
   html { font-size: 17px; }
   .nomlar, .qollanish { grid-template-columns: minmax(0, 1fr); }
-  .soz svg { width: 80px; height: 80px; }
+  .soz > svg { width: 80px; height: 80px; }
   .soz { padding: 14px 6px 12px; }
   .belgilar { grid-template-columns: minmax(0, 1fr); }
   .rangli { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -260,7 +262,7 @@ html { scroll-behavior: smooth; }
 .ovoz-forma h3 { font-size: 1.4rem; }
 .ovoz-karta { background: var(--surface); border: 2px solid var(--accent); border-radius: 22px; box-shadow: 0 0 0 6px var(--accent-soft); display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); overflow: hidden; }
 .ovoz-logo { background: var(--paper); display: grid; place-items: center; padding: clamp(24px, 5vw, 48px); }
-.ovoz-logo svg { width: 100%; max-width: 380px; height: auto; }
+.ovoz-logo > svg { width: 100%; max-width: 380px; height: auto; }
 .ovoz-forma { padding: clamp(22px, 4vw, 36px); display: flex; flex-direction: column; gap: 12px; }
 .ovoz-tanlov { font-size: 1.1rem; }
 .ovoz-tanlov b { color: var(--accent-ink); }
