@@ -85,6 +85,35 @@ button.tugun:hover { border-color: var(--accent); }
   border: 1.5px solid var(--line); display: grid; place-items: center; font-weight: 800; font-size: .8rem; color: var(--accent-ink); line-height: 1; }
 .tugun.ildiz .och { color: var(--accent); }
 .bosh-xabar { color: var(--muted); padding: 30px 0; text-align: center; font-size: 1.1rem; }
+/* yakuniy brending paneli — faqat maxfiy havola (#k=…) bilan ochilganda */
+.yakuniy { margin-top: 22px; background: var(--surface); border: 2px solid #18A058; border-radius: 22px; box-shadow: 0 0 0 5px rgba(24,160,88,.14); overflow: hidden; }
+.yak-bosh { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 16px; padding: 16px 22px; border-bottom: 1.5px solid var(--line); }
+.yak-bosh h2 { font-family: var(--f-display); font-size: 1.35rem; font-weight: 800; margin: 0; }
+.yak-bosh small { color: var(--muted); font-weight: 700; display: inline-flex; align-items: center; gap: 6px; }
+.yak-ichi { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr); }
+.yak-chap { padding: 22px; display: grid; gap: 14px; align-content: start; border-right: 1.5px solid var(--line); }
+.yak-logo { background: #fff; border-radius: 16px; min-height: 190px; display: grid; place-items: center; padding: 26px; color: #4A5C72; font-weight: 700; text-align: center; border: 1.5px solid #E3E8EF; }
+.yak-logo > svg { width: 100%; max-width: 400px; height: auto; }
+.yak-stat { display: grid; gap: 6px; font-size: .92rem; color: var(--muted); }
+.yak-stat b { color: var(--ink); font-variant-numeric: tabular-nums; }
+.yak-stat .asosiy { font-size: 1.02rem; color: var(--ink); font-weight: 700; }
+.yak-ong { padding: 22px; display: grid; gap: 16px; align-content: start; }
+.yak-qator { display: grid; gap: 8px; }
+.yak-qator > span { font-weight: 800; font-size: .85rem; text-transform: uppercase; letter-spacing: .08em; color: var(--accent-ink); }
+.yak-var { display: flex; flex-wrap: wrap; gap: 8px; }
+.yak-var button { font: inherit; font-weight: 700; font-size: .9rem; color: var(--ink); background: var(--bg); border: 2px solid var(--line); border-radius: 12px; padding: 7px 12px; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; }
+.yak-var button:hover { border-color: var(--accent); }
+.yak-var button[aria-pressed="true"] { border-color: #18A058; background: rgba(24,160,88,.12); }
+.yak-var button > svg { width: 26px; height: 26px; background: #fff; border-radius: 6px; }
+.yak-amal { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; }
+.saqla { font: inherit; font-weight: 800; color: #fff; background: #18A058; border: 0; border-radius: 12px; padding: 12px 22px; cursor: pointer; }
+.saqla:disabled { background: var(--line); color: var(--muted); cursor: not-allowed; }
+.yak-holat { font-weight: 700; color: var(--muted); font-size: .9rem; }
+.yak-holat.ok { color: #18A058; }
+.yak-holat.xato { color: #B1421C; }
+.tugun.tanlangan { border: 2px solid #18A058; box-shadow: 0 0 0 4px rgba(24,160,88,.18); }
+.tugun.tanlangan::after { content: "Yakuniy"; position: absolute; left: 10px; top: -11px; background: #18A058; color: #fff; font-size: .68rem; font-weight: 800; padding: 1px 8px; border-radius: 999px; }
+@media (max-width: 820px) { .yak-ichi { grid-template-columns: minmax(0, 1fr); } .yak-chap { border-right: 0; border-bottom: 1.5px solid var(--line); } }
 .past { margin-top: 22px; display: flex; flex-wrap: wrap; gap: 12px 24px; justify-content: space-between; color: var(--muted); font-size: .9rem; }
 </style>
 </head>
@@ -98,6 +127,18 @@ button.tugun:hover { border-color: var(--accent); }
     <p>Tanlovlar birgalikda: har bir shox — shu yo'lni tanlaganlar. Foiz — bir oldingi tanlovni qilganlar ichidagi ulush.
       Masalan, «Oson Academy → Bitiruvchi qalpog'i 40%» — Academy tanlaganlarning 40 foizi qalpoqni tanlagan. Shoxni bosing — ochiladi yoki yopiladi.</p>
   </header>
+
+  <section class="yakuniy" id="yakuniy" hidden>
+    <div class="yak-bosh"><h2>Yakuniy brending</h2>
+      <small><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>Faqat siz ko'rasiz — maxfiy havola orqali</small></div>
+    <div class="yak-ichi">
+      <div class="yak-chap"><div class="yak-logo" id="yak-logo"></div><div class="yak-stat" id="yak-stat"></div></div>
+      <div class="yak-ong">
+        <div id="yak-tanlov"></div>
+        <div class="yak-amal"><button type="button" class="saqla" id="yak-saqla" disabled>Saqlash</button><span class="yak-holat" id="yak-holat" role="status"></span></div>
+      </div>
+    </div>
+  </section>
 
   <div class="boshqaruv">
     <div class="guruh" role="group" aria-label="Tartib"><span>Tartib:</span>
@@ -242,6 +283,7 @@ function logo(belgi, nom, k = ODDIY, qator = false, cls = "lk") {
 // Firebase: Firestore + anonim kirish — har brauzer bitta anonim foydalanuvchi, ovoz hujjati uning uid'i bilan,
 // shuning uchun qayta yuborilsa eski ovoz almashadi. Ism alohida "ismlar" to'plamida — uni hech kim o'qiy olmaydi
 // (faqat Firebase konsolida). Qoidalar: branding/firestore.rules.
+// yakuniy/{maxfiy kalit} — Abdulloh belgilagan yakuniy brending (natijalar daraxti sahifasining tepasida, faqat maxfiy havola bilan).
 // ?sinov — baza o'rniga shu brauzerning localStorage'i (lokal sinash uchun; ikki oynada ochilsa natijalar jonli yangilanadi).
 const FIREBASE = {
   "apiKey": "AIzaSyBi2EuxDWsxhq_7Qw8Xwt7DlJEy5t7NuqE",
@@ -285,6 +327,11 @@ async function firebaseBaza(cfg) {
       await b.commit();
     },
     kuzat(cb, xato) { return fs.onSnapshot(fs.collection(db, "ovozlar"), s => cb(s.docs.map(sana)), xato); },
+    // yakuniy brending: hujjat nomi — maxfiy kalit (havoladagi #k=…); kalitni bilgan o'qiydi va yozadi, ro'yxatini hech kim ololmaydi
+    async yakuniyOl(k) { const s = await fs.getDoc(fs.doc(db, "yakuniy", k)); return s.exists() ? sana(s) : null; },
+    async yakuniySaqla(k, t) {
+      await fs.setDoc(fs.doc(db, "yakuniy", k), { nom: t.nom, belgi: t.belgi, uslub: t.uslub, plyus: t.plyus, vaqt: fs.serverTimestamp() });
+    },
   };
 }
 
@@ -313,6 +360,8 @@ function sinovBaza() {
       addEventListener("storage", e => { if (e.key === K) ber(); });
       return () => {};
     },
+    async yakuniyOl(k) { const v = ol(K + "-yakuniy-" + k, null); return v ? { ...v, vaqt: new Date(v.vaqt) } : null; },
+    async yakuniySaqla(k, t) { yoz(K + "-yakuniy-" + k, { nom: t.nom, belgi: t.belgi, uslub: t.uslub, plyus: t.plyus, vaqt: Date.now() }); },
     // natijalar sahifasini ko'rish uchun tasodifiy ovozlar (?sinov&namuna=40)
     namuna(n) {
       const tas = a => a[Math.floor(Math.random() * a.length)], v = ol(K, {});
@@ -411,7 +460,9 @@ function chiz() {
     const belgi = bola ? `<span class="och" aria-hidden="true">${och ? "−" : "+" + bola}</span>` : "";
     if (!t.chuq) return `<div class="tugun ildiz" style="left:0;top:${t.y}px"><span class="matn" style="grid-column:1/-1"><span class="nomi">Jami ovozlar</span><span class="son">${t.n} ta</span></span>${belgi}</div>`;
     const teg = bola ? "button" : "div";
-    return `<${teg} ${bola ? `type="button" data-k="${k}" aria-expanded="${och}"` : ""} class="tugun${t.yet ? " yet" : ""}" style="left:${t.x}px;top:${t.y}px" title="${tavsif(t).replace(/"/g, "&quot;")}">${tugunIchi(t)}${belgi}</${teg}>`;
+    // saqlangan yakuniy variantning yo'li daraxtda yashil ramka bilan (faqat maxfiy havola bilan ochilganda)
+    const yol = yak.k && toliqmi(yak.saqlangan) && Object.entries(t.yol).every(([d, q]) => yak.saqlangan[d] === q);
+    return `<${teg} ${bola ? `type="button" data-k="${k}" aria-expanded="${och}"` : ""} class="tugun${t.yet ? " yet" : ""}${yol ? " tanlangan" : ""}" style="left:${t.x}px;top:${t.y}px" title="${tavsif(t).replace(/"/g, "&quot;")}">${tugunIchi(t)}${belgi}</${teg}>`;
   }).join("");
   m.innerHTML = svg + html;
   $("yangilandi").textContent = "Yangilandi: " + new Date().toLocaleTimeString("uz-UZ", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
@@ -448,13 +499,75 @@ document.addEventListener("click", e => {
 });
 $("nollar").addEventListener("change", e => { s.nollar = e.target.checked; chiz(); });
 
+// ---------- yakuniy brending (maxfiy havola: daraxt.html#k=<kalit>) ----------
+const yak = { k: null, t: { nom: null, belgi: null, uslub: null, plyus: null }, saqlangan: null, baza: null };
+{
+  const m = /(?:^#|&)k=([A-Za-z0-9_-]{32,})/.exec(location.hash);
+  try { if (m) localStorage.setItem("branding-yakuniy-kalit", m[1]); yak.k = m ? m[1] : localStorage.getItem("branding-yakuniy-kalit"); } catch (e) { yak.k = m && m[1]; }
+}
+const toliqmi = t => !!(t && t.nom && t.belgi && t.uslub && t.plyus);
+const birxil = (a, b) => !!a && !!b && ["nom", "belgi", "uslub", "plyus"].every(k => a[k] === b[k]);
+const bosh = m => m[0].toUpperCase() + m.slice(1);
+const QATORLAR = [
+  ["nom", "Nom", () => NOMLAR.map(n => [n.id, n.nom, ""])],
+  ["belgi", "Belgi", () => BELGILAR.map(b => [b.id, b.nom, belgiSvg(b.id, ODDIY, "", { uslub: yak.t.uslub || "yaxlit", plyus: "yoq" })])],
+  ["uslub", "Uslub", () => [["yaxlit", "Yaxlit"], ["chiziq", "Chiziqli"]].map(([q, n]) => [q, n, yak.t.belgi ? belgiSvg(yak.t.belgi, ODDIY, "", { uslub: q, plyus: "yoq" }) : ""])],
+  ["plyus", "Plyus", () => ["yoq", "qizil", "oq"].map(q => [q, bosh(plyusNomi({ ...yak.t, plyus: q, uslub: yak.t.uslub || "yaxlit" })),
+    yak.t.belgi ? belgiSvg(yak.t.belgi, ODDIY, "", { uslub: yak.t.uslub || "yaxlit", plyus: q }) : ""])],
+];
+function yakHolat(m, tur = "") { $("yak-holat").textContent = m; $("yak-holat").className = "yak-holat " + tur; }
+function yakChiz() {
+  if (!yak.k) return;
+  $("yakuniy").hidden = false;
+  const t = yak.t;
+  $("yak-tanlov").innerHTML = QATORLAR.map(([k, sar, ol]) => `<div class="yak-qator"><span>${sar}</span><div class="yak-var">${ol().map(([q, nomi, ik]) =>
+    `<button type="button" data-yak="${k}" data-q="${q}" aria-pressed="${t[k] === q}">${ik}${nomi}</button>`).join("")}</div></div>`).join("");
+  if (toliqmi(t)) { holat = { ...t }; $("yak-logo").innerHTML = logo(t.belgi, t.nom); }
+  else $("yak-logo").textContent = "Nom, belgi, uslub va plyusni tanlang";
+  // tanlangan variant ovozlarda qanday: har qadam — oldingi tanlov ichidagi ulush
+  const ov = s.ovozlar.filter(toza), jami = ov.length;
+  if (toliqmi(t) && jami) {
+    let qolgan = ov; const qadam = [];
+    for (const k of ["nom", "belgi", "uslub", "plyus"]) { const keyin = qolgan.filter(v => v[k] === t[k]); qadam.push([k, keyin.length, qolgan.length]); qolgan = keyin; }
+    const nomi = { nom: NOMLAR.find(n => n.id === t.nom).nom, belgi: belgiTop(t.belgi).nom, uslub: bosh(USLUBLAR[t.uslub]), plyus: bosh(plyusNomi(t)) };
+    $("yak-stat").innerHTML = `<span class="asosiy">Aynan shu variantga: <b>${qolgan.length}</b> ovoz (jamidan ${foiz(qolgan.length, jami)}%)</span>`
+      + qadam.map(([k, n, d], i) => `<span>${i ? "↳ " : ""}${nomi[k]}: <b>${n}</b> / ${d} — ${i ? "oldingisi ichida" : "jamidan"} ${foiz(n, d)}%</span>`).join("");
+  } else $("yak-stat").innerHTML = "";
+  const ozgardi = toliqmi(t) && !birxil(t, yak.saqlangan);
+  $("yak-saqla").disabled = !ozgardi || !yak.baza;
+  if (ozgardi && yak.saqlangan) yakHolat("Saqlanmagan o'zgarish bor");
+}
+document.addEventListener("click", async e => {
+  const b = e.target.closest("[data-yak]");
+  if (b) { yak.t[b.dataset.yak] = b.dataset.q; yakHolat(""); yakChiz(); return; }
+  if (e.target.closest("#yak-saqla")) {
+    $("yak-saqla").disabled = true; yakHolat("Saqlanmoqda…");
+    try {
+      await yak.baza.yakuniySaqla(yak.k, yak.t); yak.saqlangan = { ...yak.t };
+      yakHolat("Saqlandi · " + new Date().toLocaleTimeString("uz-UZ", { hour: "2-digit", minute: "2-digit" }), "ok");
+    } catch (er) { console.error(er); yakHolat("Saqlanmadi: Firebase qoidalari yangilanganini tekshiring", "xato"); }
+    yakChiz(); chiz();
+  }
+});
+
 (async () => {
   if (SINOV) $("sinov").hidden = false;
   if (SINOV && FIREBASE) { $("orqaga").href = "natijalar.html?sinov"; }
   try {
     const baza = await bazaOch();
+    if (yak.k) {
+      yak.baza = baza;
+      try {
+        const v = await baza.yakuniyOl(yak.k);
+        if (v) {
+          yak.saqlangan = { nom: v.nom, belgi: v.belgi, uslub: v.uslub, plyus: v.plyus }; yak.t = { ...yak.saqlangan };
+          yakHolat("Saqlangan · " + v.vaqt.toLocaleString("uz-UZ", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" }), "ok");
+        }
+      } catch (er) { console.error(er); yakHolat("Yakuniy tanlovni o'qib bo'lmadi: Firebase qoidalari yangilanganini tekshiring", "xato"); }
+      yakChiz();
+    }
     if (SINOV && PARAM.get("namuna")) baza.namuna(+PARAM.get("namuna") || 30);
-    baza.kuzat(ov => { s.ovozlar = ov; chiz(); }, e => { console.error(e); $("yangilandi").textContent = "Aloqa uzildi — sahifani yangilang"; });
+    baza.kuzat(ov => { s.ovozlar = ov; chiz(); yakChiz(); }, e => { console.error(e); $("yangilandi").textContent = "Aloqa uzildi — sahifani yangilang"; });
   } catch (e) { console.error(e); $("maydon").innerHTML = `<p class="bosh-xabar">Bazaga ulanib bo'lmadi.</p>`; }
 })();
 </script>
