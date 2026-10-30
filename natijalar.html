@@ -105,6 +105,11 @@ svg { display: block; }
   .top-q { grid-template-columns: 24px 96px minmax(0, 1fr); }
   .top-q .m { display: none; }
 }
+.daraxt-havola { margin-top: 22px; display: flex; align-items: center; justify-content: space-between; gap: 16px; background: var(--accent); color: #fff; border-radius: 18px; padding: 18px 24px; text-decoration: none; box-shadow: var(--shadow); }
+.daraxt-havola span { display: grid; gap: 2px; font-weight: 600; opacity: .95; }
+.daraxt-havola b { font-family: var(--f-display); font-size: 1.25rem; font-weight: 800; opacity: 1; }
+.daraxt-havola:hover { filter: brightness(1.08); }
+.daraxt-havola svg { flex: none; }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
 </style>
 </head>
@@ -126,6 +131,11 @@ svg { display: block; }
     <div class="raqam"><small>Anonim</small><div id="r-anonim">—</div></div>
     <div class="raqam"><small>Oxirgi ovoz</small><div class="kichik" id="r-oxirgi">—</div></div>
   </div>
+
+  <a class="daraxt-havola" href="daraxt.html">
+    <span><b>Natijalar daraxti</b>Nom, belgi, uslub va plyus birgalikda: masalan, Academy tanlaganlar qaysi belgini tanlagan</span>
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+  </a>
 
   <section class="panel">
     <h2>Eng ko'p tanlangan logotiplar</h2>
