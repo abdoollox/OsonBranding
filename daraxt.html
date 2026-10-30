@@ -105,6 +105,17 @@ button.tugun:hover { border-color: var(--accent); }
 .yak-var button:hover { border-color: var(--accent); }
 .yak-var button[aria-pressed="true"] { border-color: #18A058; background: rgba(24,160,88,.12); }
 .yak-var button > svg { width: 26px; height: 26px; background: #fff; border-radius: 6px; }
+/* chiqarish (faqat maxfiy havola bilan): × tugmasi va chiqarilganlar qatori */
+.chiq { position: absolute; right: 8px; top: 6px; width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; font-size: .95rem; font-weight: 800;
+  line-height: 1; color: var(--muted); background: var(--bg); border: 1.5px solid var(--line); cursor: pointer; }
+.chiq:hover { color: #fff; background: #B1421C; border-color: #B1421C; }
+.tugun .otgan { color: #18A058; font-weight: 800; }
+.chiqlar { margin-top: 14px; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.chiqlar > span { color: var(--muted); font-weight: 700; font-size: .9rem; }
+.chiqlar .chip { display: inline-flex; align-items: center; gap: 8px; background: var(--surface); border: 1.5px solid var(--line); border-radius: 999px; padding: 5px 6px 5px 14px; font-size: .88rem; font-weight: 700; }
+.chiqlar .chip s { color: var(--muted); }
+.chiqlar .chip button { font: inherit; width: 24px; height: 24px; border-radius: 50%; border: 0; background: var(--bg); color: var(--muted); cursor: pointer; font-weight: 800; }
+.chiqlar .chip button:hover { background: var(--accent); color: #fff; }
 .tugun.tanlangan { border: 2px solid #18A058; box-shadow: 0 0 0 4px rgba(24,160,88,.18); }
 .tugun.tanlangan::after { content: "Yakuniy"; position: absolute; left: 10px; top: -11px; background: #18A058; color: #fff; font-size: .68rem; font-weight: 800; padding: 1px 8px; border-radius: 999px; }
 @media (max-width: 820px) { .yak-ichi { grid-template-columns: minmax(0, 1fr); } .yak-chap { border-right: 0; border-bottom: 1.5px solid var(--line); } }
@@ -145,7 +156,10 @@ button.tugun:hover { border-color: var(--accent); }
     </div>
     <label class="belgilash"><input type="checkbox" id="nollar"> Ovoz olmaganlarni ham ko'rsatish</label>
   </div>
-  <p class="izoh"><span>Jami: <b id="jami">—</b> ovoz</span><span>Shox qalinligi — ovozlar soni</span><span>Ko'k ramka — o'z guruhida yetakchi</span></p>
+  <p class="izoh"><span>Jami: <b id="jami">—</b> ovoz</span><span>Shox qalinligi — ovozlar soni</span><span>Ko'k ramka — o'z guruhida yetakchi</span>
+    <span id="chiq-izoh" hidden><b>×</b> — variantni chiqarish: uning ovozlari shu guruhdagi yetakchi shoxga, aynan mos yo'l bo'yicha o'tadi</span></p>
+
+  <div class="chiqlar" id="chiqlar" hidden></div>
 
   <div class="xarita"><div class="maydon" id="maydon"></div></div>
 
@@ -374,14 +388,34 @@ const TARTIB = { nom: ["nom", "belgi", "uslub", "plyus"], belgi: ["belgi", "nom"
 const QIYMAT = {
   nom: NOMLAR.map(n => n.id), belgi: BELGILAR.map(b => b.id), uslub: ["yaxlit", "chiziq"], plyus: ["yoq", "qizil", "oq"] };
 const COL = 262, ROW = 86, ROW_LG = 144, W_TUGUN = 240;
-const s = { tartib: "nom", ochiq: new Set(["", "*1"]), nollar: false, ovozlar: [] };   // "*1" — 1-darajadagilar hammasi ochiq
+const s = { tartib: "nom", ochiq: new Set(["", "*1"]), nollar: false, ovozlar: [], chiq: [] };   // "*1" — 1-darajadagilar hammasi ochiq
 const toza = v => NOMLAR.some(n => n.id === v.nom) && belgiTop(v.belgi) && USLUBLAR[v.uslub] && PLYUSLAR[v.plyus];
 const foiz = (a, b) => b ? Math.round(a / b * 100) : 0;
 const kalit = yol => Object.entries(yol).map(([k, v]) => k + "=" + v).join("|");
 
+// Chiqarish (Abdulloh: "qaysidir variant minus qilinsa, shu shox bo'yicha mos keladigan yuqoridagi shoxga ballar o'tishi kerak"):
+// s.chiq — [{yol, d, q}]: yol ichidagi ovozlardan d darajasida q tanlaganlari o'sha yol ichidagi yetakchi qo'shniga o'tadi,
+// qolgan tanlovlari (keyingi darajalar) o'zgarmaydi — masalan Akademiya → Qalpoq → Yaxlit → Plyussiz endi Academy → Qalpoq → Yaxlit → Plyussiz.
+// Chiqarishlar tartib bilan qo'llanadi; yetakchi har safar o'sha paytdagi (oldingi o'tkazishlardan keyingi) ovozlardan aniqlanadi.
+const mosmi = (v, yol) => Object.entries(yol).every(([d, q]) => v[d] === q);
+function ishchi() {
+  const ov = s.ovozlar.filter(toza).map(v => ({ ...v, asl: v }));
+  for (const c of s.chiq) {
+    const ichida = ov.filter(v => mosmi(v, c.yol));
+    const chiqqan = new Set(s.chiq.filter(x => x.d === c.d && kalit(x.yol) === kalit(c.yol)).map(x => x.q));
+    const son = q => ichida.filter(v => v[c.d] === q).length;
+    const qolgan = QIYMAT[c.d].filter(q => !chiqqan.has(q));
+    c.kim = qolgan.length ? qolgan.reduce((a, b) => son(b) > son(a) ? b : a) : null;
+    c.n = son(c.q);
+    if (c.kim) ichida.forEach(v => { if (v[c.d] === c.q) v[c.d] = c.kim; });
+  }
+  return ov;
+}
+
 // daraxt: har tugun — yo'l (masalan {nom: "academy", belgi: "qalpoq"}) va shu yo'lni tanlaganlar
 function qur(ovozlar, yol = {}, chuq = 0) {
-  const tartib = TARTIB[s.tartib], t = { yol, chuq, n: ovozlar.length, bolalar: [] };
+  const tartib = TARTIB[s.tartib], t = { yol, chuq, n: ovozlar.length, bolalar: [],
+    otgan: ovozlar.filter(v => v.asl && Object.keys(yol).some(d => v.asl[d] !== v[d])).length };
   if (chuq < tartib.length) {
     const daraja = tartib[chuq];
     t.bolalar = QIYMAT[daraja].map((q, i) => ({ q, i, ov: ovozlar.filter(v => v[daraja] === q) }))
@@ -406,7 +440,7 @@ function joyla(t, holatJ) {
 function tugunIchi(t) {
   const tartib = TARTIB[s.tartib], daraja = tartib[t.chuq - 1], q = t.yol[daraja];
   const ota = t.ota ? t.ota.n : t.n;
-  const son = `<span class="son"><b>${t.n}</b> ovoz · ${foiz(t.n, ota)}%</span>`;
+  const son = `<span class="son"><b>${t.n}</b> ovoz · ${foiz(t.n, ota)}%${t.otgan ? ` · <span class="otgan">+${t.otgan} o'tgan</span>` : ""}</span>`;
   const chiziq = `<span class="chiziq"><i style="width:${foiz(t.n, ota)}%"></i></span>`;
   if (daraja === "nom") return `<span class="matn" style="grid-column:1/-1"><span class="nomi">${NOMLAR.find(n => n.id === q).nom}</span>${son}</span>${chiziq}`;
   if (daraja === "belgi") return `<span class="ik">${belgiSvg(q, ODDIY, "", { uslub: "yaxlit", plyus: "yoq" })}</span><span class="matn"><span class="nomi">${belgiTop(q).nom}</span>${son}</span>${chiziq}`;
@@ -423,8 +457,9 @@ function tavsif(t) {
 }
 
 function chiz() {
-  const ovozlar = s.ovozlar.filter(toza);
+  const ovozlar = ishchi();
   s.jami = ovozlar.length;
+  chiqlarChiz();
   $("jami").textContent = s.jami;
   document.querySelectorAll("[data-tartib]").forEach(b => b.setAttribute("aria-pressed", b.dataset.tartib === s.tartib));
   const m = $("maydon");
@@ -447,36 +482,55 @@ function chiz() {
     const teg = bola ? "button" : "div";
     // paneldagi tanlovning yo'li daraxtda yashil ramka bilan (faqat maxfiy havola bilan ochilganda)
     const yol = yak.k && toliqmi(yak.t) && Object.entries(t.yol).every(([d, q]) => yak.t[d] === q);
-    return `<${teg} ${bola ? `type="button" data-k="${k}" aria-expanded="${och}"` : ""} class="tugun${t.yet ? " yet" : ""}${yol ? " tanlangan" : ""}" style="left:${t.x}px;top:${t.y}px" title="${tavsif(t).replace(/"/g, "&quot;")}">${tugunIchi(t)}${belgi}</${teg}>`;
+    // × — chiqarish (faqat maxfiy havola bilan; guruhda yagona qolgan variantni chiqarib bo'lmaydi)
+    const daraja = TARTIB[s.tartib][t.chuq - 1], ota = { ...t.yol }; delete ota[daraja];
+    const x = yak.k && t.ota.bolalar.length > 1 ? `<span class="chiq" role="button" tabindex="0" data-chiq='${JSON.stringify({ yol: ota, d: daraja, q: t.yol[daraja] })}' title="Chiqarish: ovozlari shu guruhdagi yetakchiga o'tadi">×</span>` : "";
+    return `<${teg} ${bola ? `type="button" data-k="${k}" aria-expanded="${och}"` : ""} class="tugun${t.yet ? " yet" : ""}${yol ? " tanlangan" : ""}" style="left:${t.x}px;top:${t.y}px" title="${tavsif(t).replace(/"/g, "&quot;")}">${tugunIchi(t)}${belgi}${x}</${teg}>`;
   }).join("");
   m.innerHTML = svg + html;
   $("yangilandi").textContent = "Yangilandi: " + new Date().toLocaleTimeString("uz-UZ", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
 }
 
+const qiymatNomi = (d, q, yol = {}) => d === "nom" ? NOMLAR.find(n => n.id === q).nom : d === "belgi" ? belgiTop(q).nom
+  : d === "uslub" ? USLUBLAR[q] : plyusNomi({ uslub: "yaxlit", ...yol, plyus: q });
+function chiqlarChiz() {
+  const el = $("chiqlar");
+  el.hidden = !s.chiq.length;
+  if (!s.chiq.length) { el.innerHTML = ""; return; }
+  el.innerHTML = `<span>Chiqarilganlar:</span>` + s.chiq.map((c, i) => {
+    const qayer = Object.keys(c.yol).length ? Object.entries(c.yol).map(([d, q]) => qiymatNomi(d, q, c.yol)).join(" → ") + " ichida: " : "";
+    return `<span class="chip">${qayer}<s>${qiymatNomi(c.d, c.q, c.yol)}</s> → ${c.kim ? qiymatNomi(c.d, c.kim, c.yol) : "—"} (${c.n} ovoz)<button type="button" data-qayt="${i}" title="Qaytarish">×</button></span>`;
+  }).join("") + `<button type="button" class="tugma" data-qayt="hammasi">Hammasini qaytarish</button>`;
+}
+
 // yetakchilar yo'li: har darajada eng ko'p ovoz olganigina ochiladi
 function yetakchiYoli() {
-  const ildiz = qur(s.ovozlar.filter(toza));
+  const ildiz = qur(ishchi());
   s.ochiq = new Set([""]);
   let t = ildiz;
   while (t.bolalar.length) { const y = t.bolalar.find(b => b.yet) || t.bolalar[0]; s.ochiq.add(kalit(y.yol)); t = y; }
 }
 function hammasi() {
   s.ochiq = new Set([""]);
-  (function yur(t) { s.ochiq.add(kalit(t.yol)); t.bolalar.forEach(yur); })(qur(s.ovozlar.filter(toza)));
+  (function yur(t) { s.ochiq.add(kalit(t.yol)); t.bolalar.forEach(yur); })(qur(ishchi()));
 }
 
 document.addEventListener("click", e => {
+  const ch = e.target.closest("[data-chiq]");
+  if (ch) { s.chiq.push(JSON.parse(ch.dataset.chiq)); chiz(); yakChiz(); return; }
+  const qt = e.target.closest("[data-qayt]");
+  if (qt) { qt.dataset.qayt === "hammasi" ? (s.chiq = []) : s.chiq.splice(+qt.dataset.qayt, 1); chiz(); yakChiz(); return; }
   const t = e.target.closest("button.tugun[data-k]");
   if (t) {
     const k = t.dataset.k;
     // "*1" bilan ochilgan 1-daraja tugunini yopish uchun avval hammasini aniq ro'yxatga o'tkazamiz
-    if (s.ochiq.has("*1")) { s.ochiq.delete("*1"); qur(s.ovozlar.filter(toza)).bolalar.forEach(b => s.ochiq.add(kalit(b.yol))); }
+    if (s.ochiq.has("*1")) { s.ochiq.delete("*1"); qur(ishchi()).bolalar.forEach(b => s.ochiq.add(kalit(b.yol))); }
     s.ochiq.has(k) ? s.ochiq.delete(k) : s.ochiq.add(k);
     return chiz();
   }
   const b = e.target.closest("[data-tartib], [data-och]");
   if (!b) return;
-  if (b.dataset.tartib) { s.tartib = b.dataset.tartib; s.ochiq = new Set(["", "*1"]); }
+  if (b.dataset.tartib) { s.tartib = b.dataset.tartib; s.ochiq = new Set(["", "*1"]); s.chiq = []; yakChiz(); }
   if (b.dataset.och === "yetakchi") yetakchiYoli();
   if (b.dataset.och === "hammasi") hammasi();
   if (b.dataset.och === "yigish") s.ochiq = new Set([""]);
@@ -498,18 +552,19 @@ const QATORLAR = [
 function yakChiz() {
   if (!yak.k) return;
   $("yakuniy").hidden = false;
+  $("chiq-izoh").hidden = false;
   const t = yak.t;
   $("yak-tanlov").innerHTML = QATORLAR.map(([k, sar, ol]) => `<div class="yak-qator"><span>${sar}</span><div class="yak-var">${ol().map(([q, nomi, ik]) =>
     `<button type="button" data-yak="${k}" data-q="${q}" aria-pressed="${t[k] === q}">${ik}${nomi}</button>`).join("")}</div></div>`).join("");
   if (toliqmi(t)) { holat = { ...t }; $("yak-logo").innerHTML = logo(t.belgi, t.nom); }
   else $("yak-logo").textContent = "Nom, belgi, uslub va plyusni tanlang";
   // tanlangan variant ovozlarda qanday: har qadam — oldingi tanlov ichidagi ulush
-  const ov = s.ovozlar.filter(toza), jami = ov.length;
+  const ov = ishchi(), jami = ov.length;
   if (toliqmi(t) && jami) {
     let qolgan = ov; const qadam = [];
     for (const k of ["nom", "belgi", "uslub", "plyus"]) { const keyin = qolgan.filter(v => v[k] === t[k]); qadam.push([k, keyin.length, qolgan.length]); qolgan = keyin; }
     const nomi = { nom: NOMLAR.find(n => n.id === t.nom).nom, belgi: belgiTop(t.belgi).nom, uslub: bosh(USLUBLAR[t.uslub]), plyus: bosh(plyusNomi(t)) };
-    $("yak-stat").innerHTML = `<span class="asosiy">Aynan shu variantga: <b>${qolgan.length}</b> ovoz (jamidan ${foiz(qolgan.length, jami)}%)</span>`
+    $("yak-stat").innerHTML = `<span class="asosiy">Aynan shu variantga: <b>${qolgan.length}</b> ovoz (jamidan ${foiz(qolgan.length, jami)}%)${s.chiq.length ? " — chiqarilganlar o'tgandan keyin" : ""}</span>`
       + qadam.map(([k, n, d], i) => `<span>${i ? "↳ " : ""}${nomi[k]}: <b>${n}</b> / ${d} — ${i ? "oldingisi ichida" : "jamidan"} ${foiz(n, d)}%</span>`).join("");
   } else $("yak-stat").innerHTML = "";
 }
