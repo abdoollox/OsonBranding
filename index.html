@@ -731,7 +731,6 @@ window.scrollTo(0, 0);
 // Firebase: Firestore + anonim kirish — har brauzer bitta anonim foydalanuvchi, ovoz hujjati uning uid'i bilan,
 // shuning uchun qayta yuborilsa eski ovoz almashadi. Ism alohida "ismlar" to'plamida — uni hech kim o'qiy olmaydi
 // (faqat Firebase konsolida). Qoidalar: branding/firestore.rules.
-// yakuniy/{maxfiy kalit} — Abdulloh belgilagan yakuniy brending (natijalar daraxti sahifasining tepasida, faqat maxfiy havola bilan).
 // ?sinov — baza o'rniga shu brauzerning localStorage'i (lokal sinash uchun; ikki oynada ochilsa natijalar jonli yangilanadi).
 const FIREBASE = {
   "apiKey": "AIzaSyBi2EuxDWsxhq_7Qw8Xwt7DlJEy5t7NuqE",
@@ -775,11 +774,6 @@ async function firebaseBaza(cfg) {
       await b.commit();
     },
     kuzat(cb, xato) { return fs.onSnapshot(fs.collection(db, "ovozlar"), s => cb(s.docs.map(sana)), xato); },
-    // yakuniy brending: hujjat nomi — maxfiy kalit (havoladagi #k=…); kalitni bilgan o'qiydi va yozadi, ro'yxatini hech kim ololmaydi
-    async yakuniyOl(k) { const s = await fs.getDoc(fs.doc(db, "yakuniy", k)); return s.exists() ? sana(s) : null; },
-    async yakuniySaqla(k, t) {
-      await fs.setDoc(fs.doc(db, "yakuniy", k), { nom: t.nom, belgi: t.belgi, uslub: t.uslub, plyus: t.plyus, vaqt: fs.serverTimestamp() });
-    },
   };
 }
 
@@ -808,8 +802,6 @@ function sinovBaza() {
       addEventListener("storage", e => { if (e.key === K) ber(); });
       return () => {};
     },
-    async yakuniyOl(k) { const v = ol(K + "-yakuniy-" + k, null); return v ? { ...v, vaqt: new Date(v.vaqt) } : null; },
-    async yakuniySaqla(k, t) { yoz(K + "-yakuniy-" + k, { nom: t.nom, belgi: t.belgi, uslub: t.uslub, plyus: t.plyus, vaqt: Date.now() }); },
     // natijalar sahifasini ko'rish uchun tasodifiy ovozlar (?sinov&namuna=40)
     namuna(n) {
       const tas = a => a[Math.floor(Math.random() * a.length)], v = ol(K, {});
